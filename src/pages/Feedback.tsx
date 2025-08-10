@@ -28,7 +28,7 @@ type FormValues = z.infer<typeof FormSchema>;
 
 const Feedback = () => {
   const { toast } = useToast();
-  const WEBHOOK_URL = "https://sushanth22222006su.app.n8n.cloud/webhook-test/9a787b12-83a2-4bb2-9dd5-020dc4aa7429";
+  const WEBHOOK_URL = "https://sushanth22222006su.app.n8n.cloud/webhook/9a787b12-83a2-4bb2-9dd5-020dc4aa7429";
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),

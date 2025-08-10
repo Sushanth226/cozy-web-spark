@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
+
 import { Helmet } from "react-helmet-async";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -28,17 +28,7 @@ type FormValues = z.infer<typeof FormSchema>;
 
 const Feedback = () => {
   const { toast } = useToast();
-  const [webhookUrl, setWebhookUrl] = useState("");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("n8n_webhook_url");
-    if (saved) setWebhookUrl(saved);
-  }, []);
-
-  const saveWebhook = () => {
-    localStorage.setItem("n8n_webhook_url", webhookUrl);
-    toast({ title: "Saved", description: "Webhook URL saved locally." });
-  };
+  const WEBHOOK_URL = "https://sushanth22222006su.app.n8n.cloud/webhook-test/9a787b12-83a2-4bb2-9dd5-020dc4aa7429";
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -55,17 +45,9 @@ const Feedback = () => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    if (!webhookUrl) {
-      toast({
-        title: "Webhook URL missing",
-        description: "Please add your n8n webhook URL and save it first.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     try {
-      await fetch(webhookUrl, {
+      await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         mode: "no-cors",
@@ -96,19 +78,6 @@ const Feedback = () => {
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">We value your feedback</h1>
         <p className="text-muted-foreground mb-8">Tell us how we did and how we can improve.</p>
 
-        <div className="mb-8 rounded-lg border bg-card p-4">
-          <Label htmlFor="webhook">n8n Webhook URL</Label>
-          <div className="mt-2 flex gap-2">
-            <Input
-              id="webhook"
-              placeholder="https://n8n.yourdomain.com/webhook/XXXX"
-              value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
-            />
-            <Button type="button" variant="gold" onClick={saveWebhook}>Save</Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">Stored locally in your browser. Replace anytime.</p>
-        </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">

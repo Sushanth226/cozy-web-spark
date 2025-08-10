@@ -6,7 +6,7 @@
 
 
 https://docs.google.com/spreadsheets/d/1u85iAte_wc8Kgtvf4uls5sDJLRMGejDcSthkwIE9ep0/edit?usp=sharing
-
+**Video**:https://drive.google.com/file/d/1EEmZiLjzs70sXlAmeBubfcz7K_xJBtvK/view?usp=sharing
 
 **Title:** AI-Powered Cafe Feedback Summarizer Workflow
 

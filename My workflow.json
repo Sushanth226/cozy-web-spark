@@ -1,0 +1,231 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "9a787b12-83a2-4bb2-9dd5-020dc4aa7429",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "68b88443-b851-4b2f-b855-f71aaddd2fbc",
+      "name": "Webhook",
+      "webhookId": "9a787b12-83a2-4bb2-9dd5-020dc4aa7429"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You will be given structured cafe feedback data in JSON format with fields: \ncustomer_name, email, visit_frequency, coffee_quality, service_quality, favorite_item, and improvement_suggestions.\n\nYour task:\n1. Read the feedback carefully.\n2. If the improvement_suggestions field contains remarks unrelated to the cafe experience (e.g., spam, off-topic comments, random characters, unrelated product mentions), output only the word \"Irrelevant\".\n3. Otherwise, write a short, professional feedback summary in one sentence:\n   - Mention the overall satisfaction based on coffee_quality and service_quality.\n   - Mention the tone as positive, neutral, or negative.\n   - Highlight any key improvement points from improvement_suggestions.\n4. Keep the summary concise, under 15 words, and suitable for storing in the 'feedback_summary' column in Google Sheets.\n5. Each summary should be different depending on the customer’s input — do not reuse sentences.\n\nExample:\nInput:\n{\n  \"customer_name\": \"Sushanth\",\n  \"email\": \"techie2602@gmail.com\",\n  \"visit_frequency\": \"Monthly\",\n  \"coffee_quality\": 5,\n  \"service_quality\": 5,\n  \"favorite_item\": \"black coffee\",\n  \"improvement_suggestions\": \"good, need improvement in the cleanliness\"\n}\n\nOutput:\n\"Highly satisfied with coffee and service; suggests improving cleanliness.\"\n\n---\n\nFor the Google Sheet:\n- Append a new row for each customer feedback.\n- Include the generated feedback_summary in the corresponding column.\n- Do not overwrite past summaries; only add or update for the matching row if the same email exists.\n",
+        "options": {
+          "systemMessage": "Your task:\n\nRead and interpret the feedback.\n\nWrite a short, clear summary (1–2 sentences) that includes:\n\nOverall sentiment (positive, neutral, or negative)\n\nAny compliments or positive notes\n\nKey suggestion(s) for improvement\n\nKeep the tone neutral and concise.\n\n\n\"feedback_summary\" → your generated summary."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "249d1f71-b3e7-43a0-8909-d508cf896bca",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "573c699f-1df8-4273-84e0-6ac769a7e9d8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lz1lOKlmhKQ8rsGI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1u85iAte_wc8Kgtvf4uls5sDJLRMGejDcSthkwIE9ep0",
+          "mode": "list",
+          "cachedResultName": "project feedback form",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u85iAte_wc8Kgtvf4uls5sDJLRMGejDcSthkwIE9ep0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u85iAte_wc8Kgtvf4uls5sDJLRMGejDcSthkwIE9ep0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "feedback_summary": "={{ $fromAI('feedback_summary', \n`You will receive JSON data for a cafe customer:\n{\n  \"customer_name\": \"$json.body.customer_name\",\n  \"email\": \"$json.body.email\",\n  \"visit_frequency\": \"$json.body.visit_frequency\",\n  \"coffee_quality\": \"$json.body.coffee_quality\",\n  \"service_quality\": $json.body.service_quality,\n  \"favorite_item\":\"$json.body.favorite_item\",\n  \"improvement_suggestions\": \"$json.body.improvement_suggestions\"\n}\nFollow the summarization rules given.`, \n'string') \n}}\n",
+            "Name": "={{ $json.body.customer_name }}",
+            "Email": "={{ $json.body.email }}",
+            "visit frequency": "={{ $json.body.visit_frequency }}",
+            "favorite item": "={{ $json.body.favorite_item }}",
+            "coffee  quality": "={{ $json.body.coffee_quality }}",
+            "service quality": "={{ $json.body.service_quality }}",
+            "Immprovement suggestions": "={{ $json.body.improvement_suggestions }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "visit frequency",
+              "displayName": "visit frequency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "favorite item",
+              "displayName": "favorite item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "coffee  quality",
+              "displayName": "coffee  quality",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service quality",
+              "displayName": "service quality",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Immprovement suggestions",
+              "displayName": "Immprovement suggestions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "feedback_summary",
+              "displayName": "feedback_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        368,
+        208
+      ],
+      "id": "ec857b38-8b2a-4003-ba05-9f35785dc656",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SgjmswTxTuSfF5YI",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1ea8bdd5-ec11-4ca6-84d1-a4646bf17e24",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cc7b2a6c1029d76ae6a34fe64ea9da8a673206bdb9282606d1bf25d95cb0fffe"
+  },
+  "id": "XBc0yGYCR2zWbVzO",
+  "tags": []
+}

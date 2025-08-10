@@ -71,3 +71,41 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+---
+
+# Cafe Website – Webhook & Deployment Guide
+
+## Replacing the n8n Webhook URL
+
+1. Open the app and go to the "Feedback" page (also linked in the footer).
+2. Paste your n8n webhook URL into the "n8n Webhook URL" field.
+   - Example: `https://n8n.yourdomain.com/webhook/XXXXXXXX`
+3. Click "Save". The URL is stored locally in your browser (localStorage).
+4. Submit the form. A POST request will be sent with this JSON structure:
+
+```json
+{
+  "customer_name": "John Doe",
+  "email": "john@example.com",
+  "visit_frequency": "Weekly",
+  "coffee_quality": 5,
+  "service_quality": 4,
+  "favorite_item": "Latte",
+  "improvement_suggestions": "Add more vegan options"
+}
+```
+
+Notes:
+- We send the request with `mode: "no-cors"` to avoid development CORS issues. Check your n8n execution history to verify receipt.
+- Update the saved URL anytime from the Feedback page.
+
+## Deploying
+
+- In Lovable, click "Share" → "Publish" to deploy.
+- For a custom domain, go to Project → Settings → Domains and follow the steps.
+
+## Accessibility & SEO
+
+- All inputs are labeled and keyboard-accessible.
+- Pages set titles, meta descriptions, and canonical tags using `react-helmet-async`.

@@ -45,14 +45,18 @@ const Feedback = () => {
   });
 
   const onSubmit = async (data: FormValues) => {
-
     try {
+      // Convert to form-data so n8n gets each field separately
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+      });
+
       await fetch(WEBHOOK_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        mode: "no-cors",
-        body: JSON.stringify(data),
+        body: formData,
       });
+
       toast({
         title: "Feedback sent",
         description: "Your feedback was sent. Check your n8n workflow history to confirm.",
@@ -60,7 +64,11 @@ const Feedback = () => {
       form.reset();
     } catch (e) {
       console.error(e);
-      toast({ title: "Error", description: "Failed to send feedback.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to send feedback.",
+        variant: "destructive",
+      });
     }
   };
 
